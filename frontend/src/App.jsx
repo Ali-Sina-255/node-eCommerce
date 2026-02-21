@@ -1,5 +1,13 @@
-export default function App() {
+import Header from "./components/Header";
+// other imports...
+
+function App() {
   return (
-    <h1 className="text-3xl bg-red-400 font-bold underline">Hello world!</h1>
+    <>
+      <Header />
+      {/* Other components */}
+    </>
   );
 }
+
+export default App;
