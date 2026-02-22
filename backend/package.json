@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "eCommerce application built with the MERN Stack",
+  "license": "ISC",
+  "author": "Ali Sina Sultani",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

@@ -36,13 +36,15 @@ const ProductScreen = () => {
 
       {/* Product Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Product Image */}
-        <div className="rounded-lg overflow-hidden shadow-lg bg-white">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-auto object-cover"
-          />
+        {/* Product Image - Now smaller and properly sized */}
+        <div className="flex justify-center md:justify-start">
+          <div className="w-full max-w-md rounded-lg overflow-hidden shadow-lg bg-white">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-auto object-cover"
+            />
+          </div>
         </div>
 
         {/* Product Info */}
@@ -120,26 +122,6 @@ const ProductScreen = () => {
           </div>
         </div>
       </div>
-
-      {/* Reviews Section (Optional) */}
-      {product.reviews && product.reviews.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Reviews</h2>
-          <div className="space-y-4">
-            {product.reviews.map((review, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-gray-800">
-                    {review.name}
-                  </span>
-                  <Rating value={review.rating} />
-                </div>
-                <p className="text-gray-600">{review.comment}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
