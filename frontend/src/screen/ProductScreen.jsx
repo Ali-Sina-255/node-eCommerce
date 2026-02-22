@@ -1,13 +1,67 @@
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { FaArrowLeft, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import products from "../products";
+import { FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
 import Rating from "../components/Rating";
+import { useState, useEffect } from "react";
 
 const ProductScreen = () => {
+  const [product, setProduct] = useState(null); // Changed from setProducts to setProduct, and null instead of []
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { id: productId } = useParams();
-  const product = products.find((p) => p._id === productId);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      // Renamed from fetchProducts to fetchProduct
+      try {
+        setLoading(true);
+        // Add leading slash to the API path
+        const { data } = await axios.get(`/api/products/${productId}`);
+        setProduct(data);
+        setError(null);
+      } catch (error) {
+        console.log(error);
+        setError(error.response?.data?.message || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      fetchProduct();
+    }
+  }, [productId]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <p>Error: {error}</p>
+        </div>
+        <Link
+          to="/"
+          className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+        >
+          <FaArrowLeft className="mr-2" /> Back to Home
+        </Link>
+      </div>
+    );
+  }
+
+  // Show not found state
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -36,7 +90,7 @@ const ProductScreen = () => {
 
       {/* Product Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-        {/* Product Image - Now smaller and properly sized */}
+        {/* Product Image */}
         <div className="flex justify-center md:justify-start">
           <div className="w-full max-w-md rounded-lg overflow-hidden shadow-lg bg-white">
             <img
