@@ -31,7 +31,7 @@ const orderSchema = mongoose.Schema(
       required: true,
     },
     paymentResult: {
-      id: { type: string },
+      id: { type: String },
       status: { type: String },
       updated_time: { type: String },
       email_address: { type: String },

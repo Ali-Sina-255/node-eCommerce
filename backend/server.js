@@ -8,19 +8,9 @@ const port = process.env.PORT;
 connectDB();
 app.use(cors());
 
+import router from "./routes/index.js";
 // static product
 
-import products from "./data/products.js";
-
-app.get("/api/products", (req, res) => res.json(products));
-app.get("/api/products/:id", (req, res) => {
-  const product = products.find((p) => p._id === req.params.id);
-
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ message: "Product not found" });
-  }
-});
+app.use("/api/products", router.productRouter);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
