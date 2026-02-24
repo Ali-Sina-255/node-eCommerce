@@ -11,7 +11,7 @@ import "./index.css";
 import HomeScreen from "./screen/HomeScreen";
 import ProductScreen from "./screen/ProductScreen";
 import { Provider } from "react-redux";
-import store from "./store";
+import store from "./store/store";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>

@@ -1,62 +1,49 @@
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import axios from "axios";
+import { useGetProductDetailsQuery } from "../slices/productApiSlice";
 import Rating from "../components/Rating";
-import { useState, useEffect } from "react";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
 
 const ProductScreen = () => {
-  const [product, setProduct] = useState(null); // Changed from setProducts to setProduct, and null instead of []
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { id: productId } = useParams();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      // Renamed from fetchProducts to fetchProduct
-      try {
-        setLoading(true);
-        // Add leading slash to the API path
-        const { data } = await axios.get(`/api/products/${productId}`);
-        setProduct(data);
-        setError(null);
-      } catch (error) {
-        console.log(error);
-        setError(error.response?.data?.message || error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId]);
+  const {
+    data: product,
+    isLoading,
+    error,
+    isError,
+  } = useGetProductDetailsQuery(productId);
 
   // Show loading state
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
+      <div className="container mx-auto px-4 py-16">
+        <Loader type="spinner" size="xl" fullScreen={false} />
       </div>
     );
   }
 
   // Show error state
-  if (error) {
+  if (isError || error) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p>Error: {error}</p>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto">
+          <Message variant="error">
+            {error?.data?.message ||
+              error?.message ||
+              "Failed to load product details"}
+          </Message>
+          <div className="text-center mt-6">
+            <Link
+              to="/"
+              className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+            >
+              <FaArrowLeft className="mr-2" /> Back to Home
+            </Link>
+          </div>
         </div>
-        <Link
-          to="/"
-          className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
-        >
-          <FaArrowLeft className="mr-2" /> Back to Home
-        </Link>
       </div>
     );
   }
@@ -64,16 +51,18 @@ const ProductScreen = () => {
   // Show not found state
   if (!product) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Product Not Found
-        </h2>
-        <Link
-          to="/"
-          className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
-        >
-          <FaArrowLeft className="mr-2" /> Back to Home
-        </Link>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto">
+          <Message variant="warning">Product Not Found</Message>
+          <div className="text-center mt-6">
+            <Link
+              to="/"
+              className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+            >
+              <FaArrowLeft className="mr-2" /> Back to Home
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -171,11 +160,43 @@ const ProductScreen = () => {
               }`}
               disabled={product.countInStock === 0}
             >
-              Add to Cart
+              {product.countInStock > 0 ? "Add to Cart" : "Out of Stock"}
             </button>
+
+            {/* Stock message */}
+            {product.countInStock > 0 && product.countInStock < 5 && (
+              <Message variant="warning" className="mt-4">
+                Only {product.countInStock} left in stock - order soon!
+              </Message>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Reviews Section */}
+      {product.reviews && product.reviews.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Customer Reviews
+          </h2>
+          <div className="space-y-4">
+            {product.reviews.map((review, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="font-semibold text-gray-800">{review.name}</p>
+                    <Rating value={review.rating} text="" color="#FFD700" />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <p className="text-gray-600">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
