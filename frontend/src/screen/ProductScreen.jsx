@@ -1,13 +1,17 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useGetProductDetailsQuery } from "../slices/productApiSlice";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import { addToCart } from "../slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { useState } from "react";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
+  const [qty, setQty] = useState(1);
 
   const {
     data: product,
@@ -15,6 +19,21 @@ const ProductScreen = () => {
     error,
     isError,
   } = useGetProductDetailsQuery(productId);
+
+  console.log("Product data:", product); // Debug log
+  console.log("countInStock:", product?.countInStock); // Debug log
+  console.log("Is countInStock === 0?", product?.countInStock === 0); // Debug log
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const addToCartHandler = () => {
+    const quantity = Number(qty) || 1;
+    dispatch(addToCart({ ...product, qty: quantity }));
+    navigate("/cart");
+  };
+
+  // ... rest of the component
 
   // Show loading state
   if (isLoading) {
@@ -152,6 +171,30 @@ const ProductScreen = () => {
               )}
             </div>
 
+            {/* Quantity Selector - FIXED: Added onChange handler */}
+            {product.countInStock > 0 && (
+              <div className="mb-4">
+                <label
+                  htmlFor="quantity"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Quantity:
+                </label>
+                <select
+                  id="quantity"
+                  value={qty}
+                  onChange={(e) => setQty(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  {[...Array(product.countInStock).keys()].map((x) => (
+                    <option key={x + 1} value={x + 1}>
+                      {x + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <button
               className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-colors duration-300 ${
                 product.countInStock > 0
@@ -159,6 +202,7 @@ const ProductScreen = () => {
                   : "bg-gray-400 cursor-not-allowed"
               }`}
               disabled={product.countInStock === 0}
+              onClick={addToCartHandler}
             >
               {product.countInStock > 0 ? "Add to Cart" : "Out of Stock"}
             </button>
