@@ -13,6 +13,7 @@ connectDB();
 app.use(cors());
 
 app.use("/api/products", router.productRouter);
+app.use("/api/users", router.authRouter);
 
 // Error middleware - THESE MUST COME AFTER ROUTES
 app.use(notFound);
