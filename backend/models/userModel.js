@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-
+import bcrypt from "bcryptjs";
 import validator from "validator";
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -17,7 +18,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
     password: {
       type: String,
       required: [true, "Please provide a password"],
@@ -28,9 +28,13 @@ const userSchema = new mongoose.Schema(
       ],
     },
   },
-  { timestamp: true },
+  { timestamps: true },
 );
 
+// match user password entered to hashed password
+userSchema.methods.isMatchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 const User = mongoose.model("User", userSchema);
 
 export default User;

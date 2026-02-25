@@ -11,6 +11,8 @@ const app = express();
 const port = process.env.PORT;
 connectDB();
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/products", router.productRouter);
 app.use("/api/users", router.authRouter);
