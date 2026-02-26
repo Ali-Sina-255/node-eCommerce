@@ -13,6 +13,7 @@ import logo from "../assets/logo.png";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -33,7 +34,7 @@ const Header = () => {
       dispatch(logout());
       navigate("/login");
     } catch (err) {
-      console.error(err);
+      toast.error(err);
     }
   };
 
