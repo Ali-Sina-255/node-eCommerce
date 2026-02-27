@@ -9,12 +9,13 @@ export const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (user && (await user.isMatchPassword(password))) {
-    generateToken(res, user._id);
+    const token = generateToken(res, user._id);
     res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      token,
     });
   } else {
     res.status(401);
@@ -28,27 +29,36 @@ export const authUser = asyncHandler(async (req, res) => {
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   const existsUser = await User.findOne({ email });
+
   if (existsUser) {
     res.status(400);
-    throw new Error("User already exist");
+    throw new Error("User already exists");
   }
+
   const user = await User.create({ name, email, password });
+
   if (user) {
-    generateToken(res, user._id);
-    res.status(201).json({ success: true, data: user });
+    const token = generateToken(res, user._id);
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token,
+    });
   } else {
     res.status(400);
-    throw new Error("Invalid User id");
+    throw new Error("Invalid user data");
   }
 });
-
 // @desc  Logout User /clear cookies
 // @route POST /api/users/logout
 // @access private
 export const logoutUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "none", {
+  res.cookie("jwt", "", {
     httpOnly: true,
-    expiresIn: new Date(0),
+    expires: new Date(0),
   });
 
   res.status(200).json({ message: "Logout successfully!" });

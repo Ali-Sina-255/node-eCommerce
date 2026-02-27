@@ -31,15 +31,15 @@ const LoginScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    console.log("Login attempted with:", { email, password });
-
     try {
       const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      console.log("Login response:", res);
+
+      dispatch(setCredentials(res));
       navigate(redirect);
-      toast.success("Login successful!"); // Added success toast
+      toast.success("Login successful!");
     } catch (err) {
-      // Fixed: changed 'error' to 'err' to match the catch parameter
+      console.error("Login error:", err);
       toast.error(err?.data?.message || err?.error || "Login failed");
     }
   };

@@ -10,7 +10,14 @@ import {
   getUsers,
   updateUserProfile,
 } from "./authController.js";
-
+import {
+  createOrderItems,
+  getMyOrders,
+  getOrderById,
+  updateOrderToPaid,
+  updateOrderToDelivered,
+  getOrders,
+} from "./OrderController.js";
 export default {
   // Product controllers
   getProducts,
@@ -26,4 +33,12 @@ export default {
   deleteUser,
   logoutUser,
   updateUserProfile,
+  // orders
+
+  createOrderItems,
+  getMyOrders,
+  getOrderById,
+  updateOrderToPaid,
+  updateOrderToDelivered,
+  getOrders,
 };
